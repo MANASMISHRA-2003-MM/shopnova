@@ -180,8 +180,14 @@ app.post("/api/admin/products",adminOnly,async(req,res)=>{
 app.get("*",(req,res)=>res.sendFile(path.join(__dirname,"public","index.html")));
 
 initDatabase().then(()=>{
- app.listen(PORT,()=>console.log(`🛒 ShopNova running on http://localhost:${PORT}`));
+  app.listen(PORT, "0.0.0.0", ()=>{
+    console.log(`🛒 ShopNova running on port ${PORT}`);
+  });
 }).catch(e=>{
- console.error("❌ Database initialization failed:",e.message);
- process.exit(1);
+  console.error("❌ DATABASE INITIALIZATION FAILED");
+  console.error("ERROR NAME:", e.name);
+  console.error("ERROR MESSAGE:", e.message);
+  console.error("ERROR CODE:", e.code);
+  console.error("ERROR STACK:", e.stack);
+  process.exit(1);
 });
