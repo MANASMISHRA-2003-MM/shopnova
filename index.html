@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ShopNova Grocery</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:#f5faf6;color:#14231a}
+button,input,textarea,select{font:inherit}.nav{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid #e4ece6}
+.navin{max-width:1200px;margin:auto;min-height:74px;padding:10px 18px;display:flex;align-items:center;gap:14px}
+.logo{font-size:28px;font-weight:950;color:#11884c;white-space:nowrap}.logo span{color:#ff9f00}
+.search{flex:1}.search input{width:100%;padding:14px 18px;border:2px solid #1b2a21;border-radius:16px;background:#fbfdfb;outline:none}.search input:focus{border-color:#16864b}
+.btn{border:0;border-radius:14px;padding:12px 17px;font-weight:850;cursor:pointer;transition:.2s}.btn:hover{transform:translateY(-1px)}
+.admin{background:#edf7f0;color:#11884c}.loginBtn{background:#fff4df;color:#bd7200}.cart{background:#13884d;color:#fff}.ghost{background:#edf3ee;color:#203028}
+.hero{max-width:1200px;margin:26px auto;padding:44px 34px;border-radius:30px;background:linear-gradient(120deg,#e4f8ea,#fff5d8);display:flex;justify-content:space-between;align-items:center;overflow:hidden}
+.hero h1{font-size:clamp(42px,6vw,72px);line-height:.98;margin:12px 0}.hero p{font-size:18px;color:#5d6d64}.art{font-size:110px;letter-spacing:12px}
+.wrap{max-width:1200px;margin:auto;padding:0 18px 70px}.cats{display:flex;gap:9px;overflow:auto;padding:8px 0 20px}.cat{white-space:nowrap;border:1px solid #dbe7de;background:#fff;border-radius:999px;padding:10px 16px;font-weight:800;cursor:pointer}.cat.active{background:#13884d;color:#fff}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:17px}.card{background:#fff;border:1px solid #e0eae2;border-radius:22px;padding:14px;box-shadow:0 7px 25px #1b332008}.pic{height:170px;border-radius:18px;background:linear-gradient(135deg,#edf9f0,#fff7e6);display:grid;place-items:center;font-size:82px}.card h3{margin:13px 0 4px}.muted{color:#748178;font-size:13px}.price{font-size:22px;font-weight:950;margin-top:9px}.mrp{text-decoration:line-through;color:#a0aaa3;font-size:13px;margin-left:6px}.add{width:100%;margin-top:12px}
+.drawer,.modal{position:fixed;inset:0;background:#0008;z-index:50;display:none}.drawer.open,.modal.open{display:block}.panel{position:absolute;right:0;top:0;width:min(520px,100%);height:100%;background:#fff;padding:24px;overflow:auto}.close{float:right;background:#edf3ee}
+.item{display:flex;align-items:center;gap:10px;padding:13px 0;border-bottom:1px solid #edf1ee}.qty{margin-left:auto;display:flex;align-items:center;gap:8px}.qty button{border:0;background:#edf5ef;border-radius:9px;width:32px;height:32px;cursor:pointer;font-weight:900}
+.field{margin:13px 0}.field label{display:block;font-weight:800;margin-bottom:7px}.field input,.field textarea,.field select{width:100%;padding:12px 13px;border:1px solid #d7e3da;border-radius:12px;outline:none;background:#fff}.field input:focus,.field textarea:focus,.field select:focus{border-color:#13884d}
+.total{font-size:25px;font-weight:950;margin:18px 0}.checkout{width:100%;background:#ff9f00;color:#111}
+.locationBox{background:#f0faf3;border:1px solid #d4ead9;border-radius:14px;padding:14px;margin:12px 0}.locationBox small{display:block;color:#68766d;margin-top:5px}.locBtn{margin-top:9px}
+.modalCard{width:min(470px,92%);margin:7vh auto;background:#fff;border-radius:25px;padding:27px;box-shadow:0 25px 80px #0005}.modalCard h2{margin-top:0}.tabs{display:flex;gap:8px;margin-bottom:18px}.tabs button{flex:1;border:1px solid #dfe8e1;background:#fff;padding:11px;border-radius:11px;font-weight:850;cursor:pointer}.tabs .sel{background:#13884d;color:#fff}
+.hidden{display:none!important}.smallNote{font-size:12px;color:#7b877e;line-height:1.5}.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#17251d;color:#fff;padding:12px 18px;border-radius:12px;display:none;z-index:100}.toast.show{display:block}.empty{background:#fff;border:1px dashed #cbdacf;border-radius:18px;padding:32px;text-align:center;color:#718078}
+@media(max-width:950px){.grid{grid-template-columns:repeat(3,1fr)}}@media(max-width:700px){.search,.admin{display:none}.hero{margin:12px 10px;padding:30px 22px}.art{font-size:55px;letter-spacing:0}.grid{grid-template-columns:repeat(2,1fr);gap:10px}.pic{height:130px;font-size:60px}.userBadge{display:none}}
+</style>
+</head>
+<body>
+<header class="nav"><div class="navin">
+<div class="logo">Shop<span>Nova</span> 🛒</div>
+<div class="search"><input id="search" placeholder="Search groceries, vegetables, fruits..."></div>
+<button class="btn admin" onclick="location.href='/admin.html'">Admin</button>
+<button class="btn loginBtn" id="loginBtn" onclick="openLogin()">Login</button>
+<span class="btn ghost hidden" id="userBadge"></span>
+<button class="btn cart" onclick="openCart()">Cart <b id="count">0</b></button>
+</div></header>
+
+<section class="hero"><div>
+<b style="color:#13884d">🥬 FARM FRESH • SAME DAY DELIVERY</b>
+<h1>Fresh groceries.<br>Easy living.</h1>
+<p>Vegetables, groceries and daily essentials delivered to your doorstep.</p>
+<button class="btn cart" onclick="shopNow()">Shop Fresh Now →</button>
+</div><div class="art">🥦🥕🍅🍎</div></section>
+
+<main class="wrap" id="shopArea">
+<div id="loginHint" class="empty">🔐 Please login as a customer to start shopping.<br>
+<button class="btn cart" style="margin-top:12px" onclick="openLogin()">Customer Login</button></div>
+<div id="shopContent" class="hidden"><div class="cats" id="cats"></div><div class="grid" id="products"></div></div>
+</main>
+
+<div class="modal" id="loginModal" onclick="if(event.target.id==='loginModal')closeLogin()"><div class="modalCard">
+<button class="btn close" onclick="closeLogin()">✕</button><h2>Welcome to ShopNova 👋</h2>
+<p class="muted">Login karke vegetables & groceries order karein.</p>
+<div class="tabs"><button id="loginTab" class="sel" onclick="switchAuth('login')">Login</button><button id="registerTab" onclick="switchAuth('register')">New Customer</button></div>
+<div id="loginForm">
+<div class="field"><label>Mobile Number *</label><input id="loginPhone" maxlength="10" inputmode="numeric" placeholder="10-digit mobile number"></div>
+<div class="field"><label>Password *</label><input id="loginPass" type="password" placeholder="Enter password"></div>
+<button class="btn cart" style="width:100%" onclick="customerLogin()">Login & Start Shopping</button>
+</div>
+<div id="registerForm" class="hidden">
+<div class="field"><label>Full Name *</label><input id="regName" placeholder="Your full name"></div>
+<div class="field"><label>Mobile Number *</label><input id="regPhone" maxlength="10" inputmode="numeric" placeholder="10-digit mobile number"></div>
+<div class="field"><label>Email</label><input id="regEmail" type="email" placeholder="you@example.com"></div>
+<div class="field"><label>Password *</label><input id="regPass" type="password" placeholder="Create password"></div>
+<button class="btn cart" style="width:100%" onclick="registerCustomer()">Create Account</button>
+</div>
+<p class="smallNote">Account data is stored in MySQL through the backend.</p>
+</div></div>
+
+<div class="drawer" id="drawer" onclick="if(event.target.id==='drawer')closeCart()"><div class="panel">
+<button class="btn close" onclick="closeCart()">✕</button><h2>Your Cart 🛒</h2><div id="cart"></div>
+<div class="total">Total ₹<span id="total">0</span></div>
+<h3>Delivery Details</h3>
+<div class="field"><label>Full Name *</label><input id="name"></div>
+<div class="field"><label>Mobile *</label><input id="phone" maxlength="10" inputmode="numeric"></div>
+<div class="field"><label>Email</label><input id="email" type="email"></div>
+<div class="field"><label>Delivery Address *</label><textarea id="address" rows="3" placeholder="House no, street, area, city..."></textarea></div>
+<div class="locationBox"><b>📍 Delivery Location</b><small id="locationText">Location not selected yet.</small>
+<button class="btn locBtn" onclick="getLocation()">Use My Current Location</button>
+<a id="mapLink" class="hidden" target="_blank" rel="noopener" style="display:block;margin-top:8px;color:#13884d;font-weight:800">Open location on map →</a></div>
+<div class="field"><label>Payment</label><select id="payment"><option value="COD">Cash on Delivery</option><option value="Online Payment">Online Payment</option></select></div>
+<button class="btn checkout" onclick="placeOrder()">Place Order</button>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+let ps=[],cart=JSON.parse(localStorage.shopnovaCart||"[]"),cat="All",currentUser=null,selectedLocation=null;
+const $=id=>document.getElementById(id),money=n=>Number(n).toLocaleString("en-IN");
+
+function save(){localStorage.shopnovaCart=JSON.stringify(cart);$("count").textContent=cart.reduce((a,x)=>a+x.qty,0)}
+function toast(t){$("toast").textContent=t;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),2600)}
+function openLogin(){switchAuth("login");$("loginModal").classList.add("open")}
+function closeLogin(){$("loginModal").classList.remove("open")}
+function switchAuth(type){$("loginForm").classList.toggle("hidden",type!=="login");$("registerForm").classList.toggle("hidden",type!=="register");$("loginTab").classList.toggle("sel",type==="login");$("registerTab").classList.toggle("sel",type==="register")}
+
+async function registerCustomer(){
+ const name=$("regName").value.trim(),phone=$("regPhone").value.trim(),email=$("regEmail").value.trim(),password=$("regPass").value;
+ if(!name||!/^[0-9]{10}$/.test(phone)||password.length<6)return toast("Name, valid 10-digit mobile aur 6+ character password required.");
+ try{const r=await fetch("/api/register",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,phone,email,password})});const d=await r.json();if(!r.ok)return toast(d.error||"Registration failed");currentUser=d.user;localStorage.shopnovaUser=JSON.stringify(currentUser);closeLogin();updateUserUI();toast("Account created successfully 🎉")}catch(e){toast("Server connection error.")}}
+async function customerLogin(){
+ const phone=$("loginPhone").value.trim(),password=$("loginPass").value;
+ try{const r=await fetch("/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({phone,password})});const d=await r.json();if(!r.ok)return toast(d.error||"Login failed");currentUser=d.user;localStorage.shopnovaUser=JSON.stringify(currentUser);closeLogin();updateUserUI();toast("Login successful. Happy shopping! 🛒")}catch(e){toast("Server connection error.")}}
+function logout(){currentUser=null;localStorage.removeItem("shopnovaUser");cart=[];save();updateUserUI();toast("Logged out")}
+function updateUserUI(){if(currentUser){$("loginBtn").textContent="Logout";$("loginBtn").onclick=logout;$("userBadge").textContent="Hi, "+currentUser.name.split(" ")[0]+" 👋";$("userBadge").classList.remove("hidden");$("loginHint").classList.add("hidden");$("shopContent").classList.remove("hidden");$("name").value=currentUser.name||"";$("phone").value=currentUser.phone||"";$("email").value=currentUser.email||"";load()}else{$("loginBtn").textContent="Login";$("loginBtn").onclick=openLogin;$("userBadge").classList.add("hidden");$("loginHint").classList.remove("hidden");$("shopContent").classList.add("hidden")}}
+function shopNow(){if(!currentUser)return openLogin();$("shopArea").scrollIntoView({behavior:"smooth"})}
+
+async function load(){try{let r=await fetch("/api/products");let d=await r.json();if(!r.ok||!Array.isArray(d))throw Error(d.error||"Products API error");ps=d;cats();render()}catch(e){console.error(e);$("products").innerHTML='<div class="empty" style="grid-column:1/-1">Products load nahi ho rahe. Server check karein.<br><button class="btn cart" style="margin-top:12px" onclick="load()">Retry</button></div>'}}
+function cats(){let a=["All",...new Set(ps.map(p=>p.category))];$("cats").innerHTML=a.map(x=>`<button class="cat ${x==cat?"active":""}" onclick="cat=${JSON.stringify(x)};cats();render()">${x}</button>`).join("")}
+function render(){let q=$("search").value.toLowerCase();let a=ps.filter(p=>(cat=="All"||p.category==cat)&&p.name.toLowerCase().includes(q));$("products").innerHTML=a.length?a.map(p=>`<div class="card"><div class="pic">${p.emoji||"🛒"}</div><h3>${p.name}</h3><div class="muted">${p.unit}</div><div class="price">₹${money(p.price)} <span class="mrp">₹${money(p.mrp)}</span></div><div class="muted">${p.stock} in stock</div><button class="btn add cart" onclick="add(${p.id})">Add to Cart</button></div>`).join(""):'<div class="empty" style="grid-column:1/-1">No products found.</div>'}
+$("search").oninput=render;
+function add(id){if(!currentUser)return openLogin();let p=ps.find(a=>a.id==id);if(!p)return;if(p.stock<1)return toast("Product out of stock");let x=cart.find(a=>a.id==id);x?x.qty=Math.min(x.qty+1,p.stock):cart.push({id,qty:1});save();toast(p.name+" added to cart 🛒")}
+function openCart(){if(!currentUser)return openLogin();$("drawer").classList.add("open");renderCart()}
+function closeCart(){$("drawer").classList.remove("open")}
+function renderCart(){let t=0;$("cart").innerHTML=cart.map(x=>{let p=ps.find(a=>a.id==x.id);if(!p)return"";t+=p.price*x.qty;return `<div class="item"><span style="font-size:34px">${p.emoji||"🛒"}</span><div><b>${p.name}</b><br>₹${money(p.price)} × ${x.qty}</div><div class="qty"><button onclick="chg(${p.id},-1)">−</button>${x.qty}<button onclick="chg(${p.id},1)">+</button></div></div>`}).join("")||"<p>Cart empty.</p>";$("total").textContent=money(t)}
+function chg(id,d){let x=cart.find(a=>a.id==id),p=ps.find(a=>a.id==id);if(!x||!p)return;x.qty+=d;if(x.qty<1)cart=cart.filter(a=>a.id!=id);if(x.qty>p.stock)x.qty=p.stock;save();renderCart()}
+function getLocation(){if(!navigator.geolocation)return toast("Browser location support nahi karta.");$("locationText").textContent="📍 Location detect ho rahi hai...";navigator.geolocation.getCurrentPosition(pos=>{let lat=pos.coords.latitude.toFixed(6),lng=pos.coords.longitude.toFixed(6);selectedLocation={lat,lng};$("locationText").textContent=`Latitude: ${lat} | Longitude: ${lng}`;$("mapLink").href=`https://www.google.com/maps?q=${lat},${lng}`;$("mapLink").classList.remove("hidden");toast("Location selected 📍")},()=>toast("Location permission allow karein."))}
+async function placeOrder(){
+ if(!currentUser)return openLogin();let name=$("name").value.trim(),phone=$("phone").value.trim(),address=$("address").value.trim();
+ if(!name||!/^[0-9]{10}$/.test(phone)||!address||!cart.length)return toast("Name, mobile, address aur cart check karo.");
+ const payload={customer_name:name,phone,address,email:$("email").value.trim(),payment_method:$("payment").value,items:cart,location:selectedLocation};
+ try{let r=await fetch("/api/orders",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});let d=await r.json();if(!r.ok)return toast(d.error||"Order failed");cart=[];save();renderCart();toast("Order #"+d.order_id+" placed 🎉");setTimeout(closeCart,900)}catch(e){toast("Server se connection nahi ho raha.")}}
+(async()=>{try{currentUser=JSON.parse(localStorage.shopnovaUser||"null")}catch{}save();updateUserUI()})();
+</script>
+</body>
+</html>
