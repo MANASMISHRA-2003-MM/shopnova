@@ -100,12 +100,44 @@ async function registerCustomer(){
  try{const r=await fetch("/api/register",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,phone,email,password})});const d=await r.json();if(!r.ok)return toast(d.error||"Registration failed");currentUser=d.user;localStorage.shopnovaUser=JSON.stringify(currentUser);closeLogin();updateUserUI();toast("Account created successfully 🎉")}catch(e){toast("Server connection error.")}}
 async function customerLogin(){
  const phone=$("loginPhone").value.trim(),password=$("loginPass").value;
- try{const r=await fetch("/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({phone,password})});const d=await r.json();if(!r.ok)return toast(d.error||"Login failed");currentUser=d.user;localStorage.shopnovaUser=JSON.stringify(currentUser);closeLogin();updateUserUI();toast("Login successful. Happy shopping! 🛒")}catch(e){toast("Server connection error.")}}
+ if(!/^[0-9]{10}$/.test(phone)||!password)return toast("10-digit mobile number aur password enter karein.");
+ try{
+  const r=await fetch("/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({phone,password})});
+  const d=await r.json();
+  if(!r.ok)return toast(d.error||"Login failed");
+  currentUser=d.user;
+  localStorage.shopnovaUser=JSON.stringify(currentUser);
+  closeLogin();
+  updateUserUI();
+  await load();
+  toast("Login successful. Happy shopping! 🛒");
+ }catch(e){console.error(e);toast("Server connection error. Check that ShopNova server is running on port 5001.")}}
 function logout(){currentUser=null;localStorage.removeItem("shopnovaUser");cart=[];save();updateUserUI();toast("Logged out")}
 function updateUserUI(){if(currentUser){$("loginBtn").textContent="Logout";$("loginBtn").onclick=logout;$("userBadge").textContent="Hi, "+currentUser.name.split(" ")[0]+" 👋";$("userBadge").classList.remove("hidden");$("loginHint").classList.add("hidden");$("shopContent").classList.remove("hidden");$("name").value=currentUser.name||"";$("phone").value=currentUser.phone||"";$("email").value=currentUser.email||"";load()}else{$("loginBtn").textContent="Login";$("loginBtn").onclick=openLogin;$("userBadge").classList.add("hidden");$("loginHint").classList.remove("hidden");$("shopContent").classList.add("hidden")}}
 function shopNow(){if(!currentUser)return openLogin();$("shopArea").scrollIntoView({behavior:"smooth"})}
 
-async function load(){try{let r=await fetch("/api/products");let d=await r.json();if(!r.ok||!Array.isArray(d))throw Error(d.error||"Products API error");ps=d;cats();render()}catch(e){console.error(e);$("products").innerHTML='<div class="empty" style="grid-column:1/-1">Products load nahi ho rahe. Server check karein.<br><button class="btn cart" style="margin-top:12px" onclick="load()">Retry</button></div>'}}
+async function load(){
+  const box=$("products");
+  box.innerHTML='<div class="empty" style="grid-column:1/-1">🛒 Products load ho rahe hain...</div>';
+  try{
+    const r=await fetch("/api/products",{method:"GET",headers:{"Accept":"application/json"},cache:"no-store"});
+    const text=await r.text();
+    let d;
+    try{d=JSON.parse(text)}catch{throw Error("Server ne JSON ke badle kuch aur response diya. Check http://localhost:5001");}
+    if(!r.ok)throw Error(d.error||d.detail||"Products API error");
+    if(!Array.isArray(d))throw Error("Products API ne invalid data bheja.");
+    ps=d.map(p=>({...p,id:Number(p.id),price:Number(p.price),mrp:Number(p.mrp),stock:Number(p.stock)}));
+    cats();
+    render();
+    console.log("ShopNova: products loaded =",ps.length);
+    if(!ps.length){
+      box.innerHTML='<div class="empty" style="grid-column:1/-1">Database me products nahi mile.<br><small>server.js start karke /api/products check karein.</small><br><button class="btn cart" style="margin-top:12px" onclick="load()">Retry</button></div>';
+    }
+  }catch(e){
+    console.error("ShopNova products error:",e);
+    box.innerHTML='<div class="empty" style="grid-column:1/-1">❌ Products load nahi ho rahe.<br><small>'+String(e.message).replace(/</g,"&lt;")+'</small><br><button class="btn cart" style="margin-top:12px" onclick="load()">Retry</button></div>';
+  }
+}
 function cats(){let a=["All",...new Set(ps.map(p=>p.category))];$("cats").innerHTML=a.map(x=>`<button class="cat ${x==cat?"active":""}" onclick="cat=${JSON.stringify(x)};cats();render()">${x}</button>`).join("")}
 function render(){let q=$("search").value.toLowerCase();let a=ps.filter(p=>(cat=="All"||p.category==cat)&&p.name.toLowerCase().includes(q));$("products").innerHTML=a.length?a.map(p=>`<div class="card"><div class="pic">${p.emoji||"🛒"}</div><h3>${p.name}</h3><div class="muted">${p.unit}</div><div class="price">₹${money(p.price)} <span class="mrp">₹${money(p.mrp)}</span></div><div class="muted">${p.stock} in stock</div><button class="btn add cart" onclick="add(${p.id})">Add to Cart</button></div>`).join(""):'<div class="empty" style="grid-column:1/-1">No products found.</div>'}
 $("search").oninput=render;
